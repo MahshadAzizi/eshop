@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from cart.api.serializers import CartItemSerializer
 from cart.selectors.cart import CartSelector
 from cart.selectors.cart_item import CartItemSelector
+from cart.services.cart import CartService
 from cart.services.cart_item import CartItemService
 from products.services.product import ProductService
 
@@ -20,8 +21,7 @@ class CartItemsView(APIView):
         cart = CartSelector.get_active_cart(user=request.user)
 
         if not cart:
-            return Response({'detail': 'No active cart found.'}, status=status.HTTP_400_BAD_REQUEST)
-
+            cart = CartService.create_cart_for_user(request.user)
         items = CartItemSelector.get_cart_items(cart=cart)
         serializer = CartItemSerializer(items, many=True)
         return Response({
@@ -35,7 +35,7 @@ class CartItemsView(APIView):
         cart = CartSelector.get_active_cart(user=request.user)
 
         if not cart:
-            return Response({'detail': 'No active cart found.'}, status=status.HTTP_400_BAD_REQUEST)
+            cart = CartService.create_cart_for_user(request.user)
 
         try:
             product = ProductService.get_product(product_id=request.data.get('product'))
