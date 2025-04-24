@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'drf_spectacular',
+    'django_celery_beat',
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
     'cart.apps.CartConfig'
@@ -132,5 +133,24 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-
 }
+
+REDIS_HOST = env('REDIS_HOST')
+REDIS_PORT = env('REDIS_PORT')
+REDIS_DB = env('REDIS_DB')
+
+CACHES = {
+    "default": {
+        "BACKEND": 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}',
+    }
+}
+
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
