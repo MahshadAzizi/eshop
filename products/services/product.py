@@ -14,11 +14,15 @@ class ProductService:
             raise ValidationError('Product not found.')
 
     @staticmethod
-    def check_product_availability(product: Product, quantity: int) -> bool:
+    def check_product_availability(product: Product, quantity: int):
         """Check if the product is available in the requested quantity."""
         if product.inventory < quantity:
             raise ValidationError(
                 f'Not enough stock for product {product.name}. Available: {product.inventory}, Requested: {quantity}')
+
+        if not product.is_active:
+            raise ValidationError(
+                f'The product is not available.')
 
     @staticmethod
     def reduce_product_inventory(product: Product, quantity: int) -> None:
