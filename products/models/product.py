@@ -32,5 +32,10 @@ class Product(models.Model):
             models.Index(fields=['is_active']),
         ]
 
+    def reduce_inventory(self, quantity: int):
+        """Reduce the product's inventory by the given quantity."""
+        self.inventory -= quantity
+        self.save()
+
     def __str__(self):
         return self.name
