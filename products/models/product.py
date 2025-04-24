@@ -26,5 +26,11 @@ class Product(models.Model):
         auto_now_add=True,
     )
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['name']),
+            models.Index(fields=['is_active']),
+        ]
+
     def __str__(self):
         return self.name
