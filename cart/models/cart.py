@@ -23,6 +23,11 @@ class Cart(models.Model):
 
     expires_at = models.DateTimeField()
 
+    def cart_deactivate(self):
+        """Mark the cart as inactive and save it."""
+        self.is_active = False
+        self.save()
+
     def save(self, *args, **kwargs):
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(minutes=30)
