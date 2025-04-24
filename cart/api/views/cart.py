@@ -8,6 +8,7 @@ from cart.services.cart import CartService
 
 
 class CartView(APIView):
+    serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
