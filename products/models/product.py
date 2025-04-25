@@ -11,7 +11,9 @@ class Product(models.Model):
         blank=True,
     )
 
-    inventory = models.PositiveIntegerField()
+    inventory = models.PositiveIntegerField(
+        default=0,
+    )
 
     price = models.DecimalField(
         max_digits=10,
@@ -35,6 +37,19 @@ class Product(models.Model):
     def reduce_inventory(self, quantity: int):
         """Reduce the product's inventory by the given quantity."""
         self.inventory -= quantity
+        self.save()
+
+    def restore_inventory(self, quantity: int):
+        """Restore the product's inventory by the given quantity."""
+        self.inventory += quantity
+        self.save()
+
+    def product_deactivated(self):
+        self.is_active = False
+        self.save()
+
+    def product_activate(self):
+        self.is_active = True
         self.save()
 
     def __str__(self):
