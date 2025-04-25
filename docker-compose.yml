@@ -1,0 +1,68 @@
+services:
+  backend:
+    build: .
+    container_name: eshop
+    command: sh -c "python manage.py migrate &&
+                    gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --threads 2"
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+      - redis
+    networks:
+      - eshop-network
+
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    env_file:
+      - db.env
+    volumes:
+      - eshop_db:/var/lib/postgresql/data
+    ports:
+      - '5434:5432'
+    networks:
+      - eshop-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready"]
+      timeout: 1s
+      retries: 3
+
+  redis:
+    image: redis:6-alpine
+    container_name: 'eshop_redis'
+    command: redis-server --loglevel debug
+    ports:
+      - "6381:6379"
+    networks:
+      - eshop-network
+    restart: always
+
+  celery:
+    build: .
+    command: [ "celery", "-A", "config", "worker", "--loglevel=info", "--concurrency=4"]
+    depends_on:
+      - redis
+      - backend
+    networks:
+      - eshop-network
+
+  celery-beat:
+    build: .
+    command: [ "celery", "-A", "config", "beat", "--loglevel=info" ]
+    depends_on:
+      - redis
+      - backend
+    networks:
+      - eshop-network
+
+networks:
+  eshop-network:
+    driver: bridge
+
+volumes:
+  eshop_db:
