@@ -187,3 +187,7 @@ LOGGING = {
         },
     },
 }
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://0.0.0.0']
+
+CSRF_COOKIE_SECURE = False
